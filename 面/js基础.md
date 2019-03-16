@@ -15,6 +15,8 @@
 
 ### 3. es5继承（哪些方式）
 > -- from 《js设计模式/js高程》
+
+[参考](http://note.youdao.com/noteshare?id=e8b2917235e32358361469381b3799bf)
 1. 类式继承
 ```
 // 子类(A)的原型指向父类(B)的实例。
@@ -35,7 +37,7 @@ function A(){
 A.prototype = new B()
 // 缺点： 多次调用父类构造函数。
 ```
-4. 原型示继承
+4. 原型继承
 ```
 // 借助一个函数，该函数返回一个匿名实例
 function inherit(o) {
@@ -88,6 +90,7 @@ s=0; e= -4+1023=1019, M=1.100110011(0011)
 
 [参考链接：http://coolcao.com/2016/10/12/js%E4%B8%AD0-1-0-2%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%AD%89%E4%BA%8E0-3/](http://coolcao.com/2016/10/12/js%E4%B8%AD0-1-0-2%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%AD%89%E4%BA%8E0-3/)
 ### 5. js执行机制
+[参考链接：https://juejin.im/post/59e85eebf265da430d571f89](https://juejin.im/post/59e85eebf265da430d571f89)
 1. js是一门单线程语言,js所谓的异步其实都是用同步的方法去模拟的。
 2. js事件循环是js实现异步的一种方法，也是js的执行机制。
     1. js执行时，同步任务进入主线程，异步任务进入事件表。
@@ -97,8 +100,6 @@ s=0; e= -4+1023=1019, M=1.100110011(0011)
 3. 事件队列又分为宏任务事件队列和微任务事件队列。浏览器环境：每执行完“**一个**”宏任务，便会去判断微任务队列中有没有要执行的。node环境：每执行完“**一轮**”宏任务(当前宏任务队列里的所有)，才会去判断微任务队列中有没有要执行的。
 4. js执行和运行有很大的区别,在不同环境下，执行方式不同，而运行大多指js解析引擎，是统一的。
 
-[参考链接：https://juejin.im/post/59e85eebf265da430d571f89](https://juejin.im/post/59e85eebf265da430d571f89)
-
 ### 6. 垃圾回收
 1. 标记清除
 > 给当前不使用的值加上标记，然后回收其内存。
@@ -107,4 +108,70 @@ s=0; e= -4+1023=1019, M=1.100110011(0011)
 
 管理内存：可以对全局变量手工解除；globalPerson = null
 
-### 8. 节流与防抖
+### 8. toString 与 valueOf 区别
+[https://segmentfault.com/a/1190000010824347](https://segmentfault.com/a/1190000010824347)
+
+1. toString( ):返回对象的字符串表示。
+2. valueOf( ):返回对象的字符串、数值或布尔值表示。
+```
+var d = {test:'123',example:123}
+var e = function(){console.log('example');}
+var f = ['test','example'];
+
+d.toString(); // "[object Object]"
+e.toString(); // "function (){console.log('example');}"
+f.toString(); // "test,example"
+
+d.valueOf(); // {test:'123',example:123}
+e.valueOf(); // function(){console.log('example');}
+f.valueOf(); // ['test','example']
+```
+> 一般用操作符单独对对象进行转换的时候，如果对象存在valueOf或toString改写的话，就先调用改写的方法，valueOf更高级，如果没有被改写，则直接调用对象原型的valueOf方法。是弹窗的话，直接调用toString方法。
+
+### 9. 防抖与节流
+[https://juejin.im/post/5b8de829f265da43623c4261](https://juejin.im/post/5b8de829f265da43623c4261)
+> 防抖：在事件被触发n秒后再执行回调，如果在这n秒内又被触发，则重新计时。
+> 节流：规定在n秒内，只能触发一次函数。如果在n秒内触发多次函数，只有一次生效。
+```
+// 防抖
+function debounce(cb, delay) {
+  return function() {
+    clearTimeout(cb.timer)
+    cb.timer = setTimeout(function(){
+      cb()
+    }, delay)
+  }
+}
+function doAjax() {
+  console.log('doAjax')
+}
+var debounceAjax = debounce(doAjax, 1000)
+addEventListener('scroll', debounceAjax)
+```
+```
+// 节流
+function throttle(cb, delay) {
+  let last
+  return function() {
+    let now = +new Date()
+    if (now < last + delay) {
+      clearTimeout(cb.timer)
+      cb.timer = setTimeout(function(){
+        cb()
+      }, delay)
+    } else {
+      cb()
+      last = now
+    }
+  }
+}
+
+function doAjax() {
+  console.log('doAjax')
+}
+
+var throttleAjax = throttle(doAjax, 1000)
+addEventListener('scroll', throttleAjax)
+```
+
+### 10. 
