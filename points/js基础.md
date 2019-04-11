@@ -174,4 +174,29 @@ var throttleAjax = throttle(doAjax, 1000)
 addEventListener('scroll', throttleAjax)
 ```
 
-### 10. 
+### 10. 深拷贝(from vuex源码)
+```
+function deepCopy(obj, cache=[]){
+  if (obj === null || typeof obj !== 'object'){
+    return obj
+  }
+
+  // 避免循环引用导致爆栈
+  const hit = cache.find(i => i.original === obj)
+  if(hit) {
+    return hit.copy
+  }
+
+  let copy = Array.isArray(obj) ? [] : {}
+
+  Object.keys(obj).forEach(key => {
+    copy[key] = deepCopy(obj[key], cache)
+  })
+
+  cache.push({
+    original: obj,
+    copy
+  })
+  return copy
+}
+```
