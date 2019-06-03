@@ -200,3 +200,30 @@ function deepCopy(obj, cache=[]){
   return copy
 }
 ```
+
+### 11. 类型转化
+1. typeof 对于原始类型来说，除了 null 都可以显示正确的类型 ```typeof null // object```
+2. typeof 对于对象来说，除了函数都会显示 object, 所以说 typeof 并不能准确判断变量到底是什么类型
+```
+typeof [] // 'object'
+typeof {} // 'object'
+typeof console.log // 'function'
+```
+3. 转Boolean: 在条件判断时，除了 undefined， null， false， NaN， ''， 0， -0，其他所有值都转为 true，包括所有对象。
+4. == 时
+![](../imgs/doubleequal.jpg)
+```
+1. 首先会判断两者类型是否相同。相同的话就是比大小了
+2. 类型不相同的话，那么就会进行类型转换
+3. 会先判断是否在对比 null 和 undefined，是的话就会返回 true
+4. 判断两者类型是否为 string 和 number，是的话就会将字符串转换为 number
+5. 判断其中一方是否为 boolean，是的话就会把 boolean 转为 number 再进行判断
+6. 判断其中一方是否为 object 且另一方为 string、number 或者 symbol，是的话就会把 object 转为原始类型再进行判断
+
+Number([]) // 0
+[] == ![] // true
+'1' == true // true
+'2' == true // false
+```
+### 12. 原型
+![](../imgs/prototype.jpg)
