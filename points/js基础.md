@@ -12,6 +12,15 @@
 1. 创建一个空对象，o = new Object().
 2. 这个对象的原型指针指向构造函数的原型，o.__proto__ = F.prototype.
 3. 更改作用域，F.call(o)
+```
+function create() {
+  var o = {}
+  var F = [...arguments][0]
+  o.__proto__ = F.prototype
+  F.call(o)
+  return o
+}
+```
 
 ### 3. es5继承（哪些方式）
 > -- from 《js设计模式/js高程》
@@ -72,7 +81,7 @@ extend(A, B)
 
 单精度指数范围是-126 ～ +127，双精度是 -1022 ～ +1023，
 
-浮点转化为而进制，整数部分采用除2取余，小数部分采用乘2取整。
+浮点转化为二进制，整数部分采用除2取余，小数部分采用乘2取整。
 eg: 13.125 --> 1011.001 = 1.011001 * 2^3, M为 1.011001,E为3,s为0
 
 e=E+127，即e=3+127=130，130的二进制表示为10000010
@@ -202,7 +211,7 @@ function deepCopy(obj, cache=[]){
 ```
 
 ### 11. 类型转化
-1. typeof 对于原始类型来说，除了 null 都可以显示正确的类型 ```typeof null // object```
+1. typeof 对于原始类型来说，除了 null 都可以显示正确的类型 ```typeof null // object```,但是null不是对象，是基本数据类型。
 2. typeof 对于对象来说，除了函数都会显示 object, 所以说 typeof 并不能准确判断变量到底是什么类型
 ```
 typeof [] // 'object'
@@ -225,5 +234,90 @@ Number([]) // 0
 '1' == true // true
 '2' == true // false
 ```
+5. +-*/ 四则运算时
+- 运算中其中一方为字符串，那么就会把另一方也转换为字符串
+- 如果一方不是字符串或者数字，那么会将它转换为数字或者字符串
 ### 12. 原型
 ![](../imgs/prototype.jpg)
+
+### 13. 事件
+#### 1. 事件流：冒泡、捕获。
+#### 2. 事件处理程序
+- 标签里的 onclick
+- btn.onclick
+- addEventListen('click', function)
+- attachEvent('click', function)
+#### 3. 事件对象 event
+#### 4. 事件类型
+1. UI事件：load, unloader, error, resize, scroll, select
+2. 焦点事件：focus, blur
+3. 鼠标与滚轮事件：click, dbclick, mousedown, mouseenter, mouseleave, mousemove, mouseout, mouseover, mouseup
+```
+除了 mouseenter 和 mouseleave，所有鼠标事件都会冒泡。
+mouseover：当鼠标移入某元素时触发，移入和移出其子元素时也会触发。
+mouseout：当鼠标移出某元素时触发，移入和移出其子元素时也会触发。
+```
+4. 键盘事件：keydown, keyup
+5. 变动事件：DOMSubtreeModified(dom树变化), DOMNodeInserted, DOMNodeRemoved,,,
+6. HTML5 事件：contextmenu(自定义右键), beforeunload(页面卸载前), DOMContentLoad(DOM树之后就出发，不理会img,js,,是否下载完毕), readystatechange(IE), hashchange(URL #变化)
+7. 触摸事件：touchstart, touchmove, touchend, touchcancel
+#### 5. 性能
+限制页面中事件处理程序的数量，使用事件委托，适当时机移除事件处理程序。
+
+### 13. requestAnimationFrame
+setTimeout、setInterval 不准，可用 requestAnimationFrame 实现。
+> 首先 requestAnimationFrame 自带函数节流功能，基本可以保证在 16.6 毫秒内只执行一次（不掉帧的情况下），并且该函数的延时效果是精确的，没有其他定时器时间不准的问题，当然你也可以通过该函数来实现 setTimeout。
+```
+function setInterval(callback, interval) {
+  let timer
+  const now = Date.now
+  let startTime = now()
+  let endTime = startTime
+  const loop = () => {
+    timer = window.requestAnimationFrame(loop)
+    endTime = now()
+    if (endTime - startTime >= interval) {
+      startTime = endTime = now()
+      callback(timer)
+    }
+  }
+  timer = window.requestAnimationFrame(loop)
+  return timer
+}
+
+let a = 0
+setInterval(timer => {
+  console.log(1)
+  a++
+  if (a === 3) cancelAnimationFrame(timer)
+}, 1000)
+```
+### 14. 手写call、apply、bind
+```
+// call
+Function.prototype.myCall = function(ctx) {
+  ctx = ctx || window
+  ctx.fn = this
+  const args = [...arguments].slice(1)
+  const res = ctx.fn(...args)
+  delete ctx.fn
+  return res
+}
+
+// apply
+Function.prototype.myApply = function(ctx) {
+  ctx = ctx || window
+  ctx.fn = this
+  const res = ctx.fn(arguments[1])
+  delete ctx.fn
+  return res
+}
+// bind
+Function.prototype.myBind = function(ctx) {
+  let that = this
+  const args = [...arguments].slice(1)
+  return function() {
+    return that.apply(ctx, [...args, ...arguments])
+  }
+}
+```
