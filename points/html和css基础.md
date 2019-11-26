@@ -37,3 +37,7 @@
     ```
 6. 为所有图片添加ALT标签。
 7. 使用语义化的 html 标签(一个页面应该只有一个 h1 标签)。
+### 3. 物理像素、逻辑像素、设备像素比
+- 物理像素（设备像素）：设备一出厂就确定了，固定的。
+- 逻辑像素（设备独立像素）：device-width = 逻辑像素；css像素。
+- 设备像素比：window.devicePixelRatio是物理像素和设备独立像素(device-independent pixels (dips))的比例。 
