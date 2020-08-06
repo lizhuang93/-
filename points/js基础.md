@@ -79,7 +79,7 @@ extend(A, B)
 - 对于单精度浮点数，采用32位存储，最高的1位是符号位s，接着的8位是指数E，剩下的23位为有效数字M。
 - 对于双精度浮点数，采用64位存储，最高的1位是符号位S，接着的11位是指数E，剩下的52位为有效数字M。
 
-单精度指数范围是-126 ～ +127，双精度是 -1022 ～ +1023，
+单精度**指数**范围是-126 ～ +127，双精度是 -1022 ～ +1023，
 
 浮点转化为二进制，整数部分采用除2取余，小数部分采用乘2取整。
 eg: 13.125 --> 1011.001 = 1.011001 * 2^3, M为 1.011001,E为3,s为0
@@ -198,14 +198,15 @@ function deepCopy(obj, cache=[]){
 
   let copy = Array.isArray(obj) ? [] : {}
 
-  Object.keys(obj).forEach(key => {
-    copy[key] = deepCopy(obj[key], cache)
-  })
-
   cache.push({
     original: obj,
     copy
   })
+  
+  Object.keys(obj).forEach(key => {
+    copy[key] = deepCopy(obj[key], cache)
+  })
+
   return copy
 }
 ```
@@ -229,6 +230,7 @@ typeof console.log // 'function'
 5. 判断其中一方是否为 boolean，是的话就会把 boolean 转为 number 再进行判断
 6. 判断其中一方是否为 object 且另一方为 string、number 或者 symbol，是的话就会把 object 转为原始类型再进行判断
 
+Number({}) // NaN
 Number([]) // 0
 [] == ![] // true
 '1' == true // true
@@ -295,8 +297,17 @@ setInterval(timer => {
 ### 14. 手写call、apply、bind
 ```
 // call
+/* eg: A.myCall(obj)
+利用 obj = {
+  name: 'Tom'
+  fn: function() {
+    return this.Tom
+  }
+} */
+
 Function.prototype.myCall = function(ctx) {
   ctx = ctx || window
+  // 将函数 A 放到 obj 上 调用obj.fn时，A里的 this 指向 obj。
   ctx.fn = this
   const args = [...arguments].slice(1)
   const res = ctx.fn(...args)
