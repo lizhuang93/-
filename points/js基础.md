@@ -197,12 +197,10 @@ function deepCopy(obj, cache=[]){
   }
 
   let copy = Array.isArray(obj) ? [] : {}
-
   cache.push({
     original: obj,
     copy
   })
-  
   Object.keys(obj).forEach(key => {
     copy[key] = deepCopy(obj[key], cache)
   })
