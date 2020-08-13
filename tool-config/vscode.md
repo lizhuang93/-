@@ -1,5 +1,5 @@
-### vscode 开启对 webpack alias(文件别名) 引入的智能提示
-1. webpack.config.js
+### 1. vscode 开启对 webpack alias(文件别名) 引入的智能提示
+1. webpack.config.js 配置别名
 ```
 resolve: {
       extensions: ['.js', '.jsx', '.vue'],
@@ -10,8 +10,7 @@ resolve: {
       },
     },
 ```
-
-根目录下创建jsconfig.json
+2. 根目录下创建jsconfig.json
 ```
 // jsconfig.json
 {
@@ -33,4 +32,4 @@ resolve: {
   ]
 }
 ```
-import someThing from '@/components' 的时候我们的智能提示又回来了。nice。
+3. import someThing from '@/components' 的时候我们的智能提示又回来了。nice。
