@@ -114,6 +114,8 @@ s=0; e= -4+1023=1019, M=1.100110011(0011)
 > 给当前不使用的值加上标记，然后回收其内存。
 2. 引用计数
 > 跟踪所有值被引用的次数，当次数变为0,然后回收其内存。存在循环引用的问题。目前js引擎都不在使用这种算法。
+3. GC回收(原因：大内存的回收耗时长，造成卡顿)
+> 根据对象的使用频率分为新生代(存在时间短易回收)、老生代对象，把需要长耗时回收拆分运行，减少中断时间，但是会增大上下文切换开销。
 
 管理内存：可以对全局变量手工解除；globalPerson = null
 
@@ -329,4 +331,25 @@ Function.prototype.myBind = function(ctx) {
     return that.apply(ctx, [...args, ...arguments])
   }
 }
+```
+
+### 15. WebviewJavascriptBridge
+#### 初始化
+1. 定义function connect(callback):
+- andorid: ```callback(window.WebviewJavascriptBridge), 'WebViewJavascriptBridgeReady'时执行。```
+- ios: ```window.WVJBCallbacks = [callback]; iframe.src="https://__bridge_loaded__"```
+2. init: 调用connect拿到bridge:
+bridge: {
+  init:function // 针对android
+  registerHandler:function // 注册方法供App调用
+  callHandler:function // js调用App
+}
+```
+connect(function(bridge) {
+  // android 要调用 init
+  if(android) bridge.init()
+
+  // bridge 注册
+  bridge.registerHandler('appCalljs', function(data){})
+})
 ```
