@@ -333,23 +333,26 @@ Function.prototype.myBind = function(ctx) {
 }
 ```
 
-### 15. WebviewJavascriptBridge
-#### 初始化
-1. 定义function connect(callback):
-- andorid: ```callback(window.WebviewJavascriptBridge), 'WebViewJavascriptBridgeReady'时执行。```
-- ios: ```window.WVJBCallbacks = [callback]; iframe.src="https://__bridge_loaded__"```
-2. init: 调用connect拿到bridge:
-bridge: {
-  init:function // 针对android
-  registerHandler:function // 注册方法供App调用
-  callHandler:function // js调用App
+### 15. WebviewJavascriptBridge 原理
+app和js各维护WebviewJavascriptBridge<br>
+
+- appCallJs: app可以直接调用window下的对象/方法。
+- jsCallApp: 通过 URL 拦截。params 放到message队列里,供app取。
+```
+WebviewJavascriptBridge = {
+  callHandler: function(){
+    _doSend()
+  },
+  registerHandler: function(){}
+}
+
+// message={handleName, params}
+function _doSend(message, responseCallback){
+  responseCallbacks[callbackId] = responseCallback;
+  sendMessageQueue.push(message);
+  iframe.src = "https://__wvjb_queue_message__"
 }
 ```
-connect(function(bridge) {
-  // android 要调用 init
-  if(android) bridge.init()
 
-  // bridge 注册
-  bridge.registerHandler('appCalljs', function(data){})
-})
-```
+
+
